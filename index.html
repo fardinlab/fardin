@@ -792,7 +792,7 @@
                     <div class="skill-container">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <span class="skill-label"><i class="fas fa-database icon-pulse me-1"></i> Data Analysis</span>
-                            <span class="progress-number" id="data-analysis-number">0%</span>
+                            <span class="progress-number" id="data-analysis-number">60%</span>
                         </div>
                         <div class="skill-bar">
                             <div class="skill-progress" data-width="65" id="data-analysis-progress"></div>
@@ -1174,9 +1174,16 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom JavaScript -->
-    <script>
+   <script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
         // Matrix rain animation for background
         const matrixCanvas = document.getElementById('matrix');
+        if (!matrixCanvas) {
+            console.error('Matrix canvas element not found');
+            return;
+        }
+        
         const matrixCtx = matrixCanvas.getContext('2d');
         
         function resizeMatrixCanvas() {
@@ -1189,11 +1196,12 @@
         
         const matrixChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&!?*';
         const fontSize = 14;
-        const columns = matrixCanvas.width / fontSize;
+        let columns = Math.floor(matrixCanvas.width / fontSize);
         const drops = [];
         
+        // Initialize drops
         for (let i = 0; i < columns; i++) {
-            drops[i] = 1;
+            drops[i] = Math.floor(Math.random() * matrixCanvas.height / fontSize);
         }
         
         function drawMatrix() {
@@ -1213,86 +1221,100 @@
                 
                 drops[i]++;
             }
+            
+            // Use requestAnimationFrame for better performance
+            requestAnimationFrame(drawMatrix);
         }
         
-        setInterval(drawMatrix, 33);
+        // Start the animation
+        drawMatrix();
         
         // Typing animation for hero section
-        const roles = ["CSE Student", "Developer", "Front-End Development", "Digital Marketer"];
         const roleElement = document.getElementById('animated-roles');
-        let roleIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        let typingDelay = 100;
-        
-        function typeRoles() {
-            const currentRole = roles[roleIndex];
+        if (roleElement) {
+            const roles = ["CSE Student", "Developer", "Front-End Developer", "Digital Marketer"];
+            let roleIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let typingDelay = 100;
             
-            if (isDeleting) {
-                roleElement.textContent = currentRole.substring(0, charIndex - 1);
-                charIndex--;
-                typingDelay = 50;
-            } else {
-                roleElement.textContent = currentRole.substring(0, charIndex + 1);
-                charIndex++;
-                typingDelay = 100;
+            function typeRoles() {
+                const currentRole = roles[roleIndex];
+                
+                if (isDeleting) {
+                    roleElement.textContent = currentRole.substring(0, charIndex - 1);
+                    charIndex--;
+                    typingDelay = 50;
+                } else {
+                    roleElement.textContent = currentRole.substring(0, charIndex + 1);
+                    charIndex++;
+                    typingDelay = 100;
+                }
+                
+                if (!isDeleting && charIndex === currentRole.length) {
+                    isDeleting = true;
+                    typingDelay = 1000;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    roleIndex = (roleIndex + 1) % roles.length;
+                    typingDelay = 500;
+                }
+                
+                setTimeout(typeRoles, typingDelay);
             }
             
-            if (!isDeleting && charIndex === currentRole.length) {
-                isDeleting = true;
-                typingDelay = 1000;
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                roleIndex = (roleIndex + 1) % roles.length;
-                typingDelay = 500;
-            }
-            
-            setTimeout(typeRoles, typingDelay);
+            typeRoles();
         }
         
         // Terminal typing effect
-        const terminalTexts = [
-            "whoami",
-            "ls -la",
-            "cd ~/projects",
-            "cat portfolio.txt",
-            "echo 'Welcome to my portfolio!'",
-            "sudo make impact"
-        ];
         const typingElement = document.getElementById('typing-text');
-        let textIndex = 0;
-        let termCharIndex = 0;
-        let isTermDeleting = false;
-        let termDelay = 100;
-        
-        function typeTerminal() {
-            const currentText = terminalTexts[textIndex];
+        if (typingElement) {
+            const terminalTexts = [
+                "whoami",
+                "ls -la",
+                "cd ~/projects",
+                "cat portfolio.txt",
+                "echo 'Welcome to my portfolio!'",
+                "sudo make impact"
+            ];
+            let textIndex = 0;
+            let termCharIndex = 0;
+            let isTermDeleting = false;
+            let termDelay = 100;
             
-            if (isTermDeleting) {
-                typingElement.textContent = currentText.substring(0, termCharIndex - 1);
-                termCharIndex--;
-                termDelay = 50;
-            } else {
-                typingElement.textContent = currentText.substring(0, termCharIndex + 1);
-                termCharIndex++;
-                termDelay = 100;
+            function typeTerminal() {
+                const currentText = terminalTexts[textIndex];
+                
+                if (isTermDeleting) {
+                    typingElement.textContent = currentText.substring(0, termCharIndex - 1);
+                    termCharIndex--;
+                    termDelay = 50;
+                } else {
+                    typingElement.textContent = currentText.substring(0, termCharIndex + 1);
+                    termCharIndex++;
+                    termDelay = 100;
+                }
+                
+                if (!isTermDeleting && termCharIndex === currentText.length) {
+                    isTermDeleting = true;
+                    termDelay = 1000;
+                } else if (isTermDeleting && termCharIndex === 0) {
+                    isTermDeleting = false;
+                    textIndex = (textIndex + 1) % terminalTexts.length;
+                    termDelay = 500;
+                }
+                
+                setTimeout(typeTerminal, termDelay);
             }
             
-            if (!isTermDeleting && termCharIndex === currentText.length) {
-                isTermDeleting = true;
-                termDelay = 1000;
-            } else if (isTermDeleting && termCharIndex === 0) {
-                isTermDeleting = false;
-                textIndex = (textIndex + 1) % terminalTexts.length;
-                termDelay = 500;
-            }
-            
-            setTimeout(typeTerminal, termDelay);
+            typeTerminal();
         }
         
         // Counter animation
         function animateCounter(elementId, finalValue, duration) {
             const element = document.getElementById(elementId);
+            if (!element) return;
+            
             const startValue = 0;
             const increment = Math.ceil(finalValue / (duration / 16));
             let currentValue = startValue;
@@ -1315,12 +1337,14 @@
                 const width = bar.getAttribute('data-width');
                 const numberId = bar.id.replace('progress', 'number');
                 bar.style.width = width + '%';
-                animateCounter(numberId, width, 2000);
+                animateCounter(numberId, parseInt(width), 2000);
             });
         }
         
         // Check if element is in viewport
         function isInViewport(element) {
+            if (!element) return false;
+            
             const rect = element.getBoundingClientRect();
             return (
                 rect.top >= 0 &&
@@ -1334,7 +1358,7 @@
         function checkAnimation() {
             const counters = document.querySelectorAll('.counter');
             counters.forEach(counter => {
-                if (isInViewport(counter) && counter.textContent === '0' || counter.textContent === '0%') {
+                if (isInViewport(counter) && (counter.textContent === '0' || counter.textContent === '0%')) {
                     const id = counter.id;
                     let finalValue;
                     
@@ -1344,21 +1368,28 @@
                     else if (id === 'projects-counter') finalValue = 12;
                     else if (id === 'hackathons-counter') finalValue = 3;
                     else if (id === 'opensource-counter') finalValue = 27;
+                    else return;
                     
                     animateCounter(id, finalValue, 2000);
                 }
             });
             
             const skillSection = document.getElementById('skills');
-            if (isInViewport(skillSection)) {
+            if (skillSection && isInViewport(skillSection)) {
                 animateSkillBars();
             }
         }
         
         // Set current year and date
-        document.getElementById('current-year').textContent = new Date().getFullYear();
+        const yearElement = document.getElementById('current-year');
+        if (yearElement) {
+            yearElement.textContent = new Date().getFullYear();
+        }
         
         function updateDateTime() {
+            const dateTimeElement = document.getElementById('current-date-time');
+            if (!dateTimeElement) return;
+            
             const now = new Date();
             const options = { 
                 weekday: 'long', 
@@ -1369,7 +1400,7 @@
                 minute: '2-digit',
                 second: '2-digit'
             };
-            document.getElementById('current-date-time').textContent = now.toLocaleDateString('en-US', options);
+            dateTimeElement.textContent = now.toLocaleDateString('en-US', options);
         }
         
         setInterval(updateDateTime, 1000);
@@ -1394,45 +1425,43 @@
         });
         
         // Form submission
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            
-            // In a real implementation, you would send this data to a server
-            console.log('Form submitted:', { name, email, message });
-            
-            // Show a success message (in a real implementation)
-            alert('Message sent successfully! I\'ll get back to you soon.');
-            this.reset();
-        });
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const message = document.getElementById('message').value;
+                
+                // In a real implementation, you would send this data to a server
+                console.log('Form submitted:', { name, email, message });
+                
+                // Show a success message (in a real implementation)
+                alert('Message sent successfully! I\'ll get back to you soon.');
+                this.reset();
+            });
+        }
         
-        // Initialize animations
-        window.addEventListener('load', function() {
-            typeRoles();
-            typeTerminal();
-            window.addEventListener('scroll', checkAnimation);
-            checkAnimation(); // Check on initial load
-        });
+        // Initialize scroll animations
+        window.addEventListener('scroll', checkAnimation);
+        checkAnimation(); // Check on initial load
         
         // Matrix Loader Animation
-        window.addEventListener('DOMContentLoaded', function() {
-            // Matrix rain animation for loader
-            const canvas = document.getElementById('matrix-loader-canvas');
-            const ctx = canvas.getContext('2d');
+        const loaderCanvas = document.getElementById('matrix-loader-canvas');
+        if (loaderCanvas) {
+            const ctx = loaderCanvas.getContext('2d');
             let width = window.innerWidth;
             let height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
+            loaderCanvas.width = width;
+            loaderCanvas.height = height;
 
             const letters = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             const fontSize = 18;
             const columns = Math.floor(width / fontSize);
             const drops = Array(columns).fill(1);
 
-            function drawMatrix() {
+            function drawLoaderMatrix() {
                 ctx.fillStyle = 'rgba(13,2,8,0.15)';
                 ctx.fillRect(0, 0, width, height);
                 ctx.font = fontSize + 'px monospace';
@@ -1447,14 +1476,14 @@
                 }
             }
 
-            let matrixInterval = setInterval(drawMatrix, 33);
+            let matrixInterval = setInterval(drawLoaderMatrix, 33);
 
             // Responsive
             window.addEventListener('resize', () => {
                 width = window.innerWidth;
                 height = window.innerHeight;
-                canvas.width = width;
-                canvas.height = height;
+                loaderCanvas.width = width;
+                loaderCanvas.height = height;
             });
 
             // Typing effect for loader
@@ -1465,8 +1494,11 @@
             let i1 = 0, i2 = 0;
 
             function typeLine1() {
+                const typingElement1 = document.getElementById('loader-typing-1');
+                if (!typingElement1) return;
+                
                 if (i1 <= text1.length) {
-                    document.getElementById('loader-typing-1').textContent = text1.slice(0, i1);
+                    typingElement1.textContent = text1.slice(0, i1);
                     i1++;
                     setTimeout(typeLine1, 70);
                 } else {
@@ -1475,17 +1507,28 @@
             }
             
             function typeLine2() {
+                const typingElement2 = document.getElementById('loader-typing-2');
+                if (!typingElement2) return;
+                
                 if (i2 <= text2.length) {
-                    document.getElementById('loader-typing-2').textContent = text2.slice(0, i2);
+                    typingElement2.textContent = text2.slice(0, i2);
                     i2++;
                     setTimeout(typeLine2, 70);
                 } else {
                     setTimeout(() => {
-                        document.getElementById('loader-subtext-1').textContent = sub1;
-                        document.getElementById('loader-subtext-1').style.opacity = 1;
+                        const subtext1 = document.getElementById('loader-subtext-1');
+                        const subtext2 = document.getElementById('loader-subtext-2');
+                        
+                        if (subtext1) {
+                            subtext1.textContent = sub1;
+                            subtext1.style.opacity = 1;
+                        }
+                        
                         setTimeout(() => {
-                            document.getElementById('loader-subtext-2').textContent = sub2;
-                            document.getElementById('loader-subtext-2').style.opacity = 1;
+                            if (subtext2) {
+                                subtext2.textContent = sub2;
+                                subtext2.style.opacity = 1;
+                            }
                         }, 400);
                     }, 300);
                 }
@@ -1495,30 +1538,37 @@
 
             // Hide loader after 5s
             setTimeout(function() {
-                document.getElementById('hacker-loader').style.opacity = '0';
-                setTimeout(function() {
-                    document.getElementById('hacker-loader').style.display = 'none';
-                    clearInterval(matrixInterval);
-                    // Add Return to Top Button only after loader is hidden
-                    const returnToTopBtn = document.createElement('button');
-                    returnToTopBtn.id = 'return-to-top';
-                    returnToTopBtn.title = 'Back to Top';
-                    returnToTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
-                    document.body.appendChild(returnToTopBtn);
-                    returnToTopBtn.style.display = 'none';
-                    window.addEventListener('scroll', function() {
-                        if (window.scrollY > 300) {
-                            returnToTopBtn.style.display = 'block';
-                        } else {
-                            returnToTopBtn.style.display = 'none';
-                        }
-                    });
-                    returnToTopBtn.addEventListener('click', function() {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    });
-                }, 500);
+                const loader = document.getElementById('hacker-loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(function() {
+                        loader.style.display = 'none';
+                        clearInterval(matrixInterval);
+                        
+                        // Add Return to Top Button only after loader is hidden
+                        const returnToTopBtn = document.createElement('button');
+                        returnToTopBtn.id = 'return-to-top';
+                        returnToTopBtn.title = 'Back to Top';
+                        returnToTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+                        document.body.appendChild(returnToTopBtn);
+                        returnToTopBtn.style.display = 'none';
+                        
+                        window.addEventListener('scroll', function() {
+                            if (window.scrollY > 300) {
+                                returnToTopBtn.style.display = 'block';
+                            } else {
+                                returnToTopBtn.style.display = 'none';
+                            }
+                        });
+                        
+                        returnToTopBtn.addEventListener('click', function() {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        });
+                    }, 500);
+                }
             }, 5000);
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>
